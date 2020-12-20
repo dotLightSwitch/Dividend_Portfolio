@@ -10,13 +10,13 @@ import bs4
 from bs4 import BeautifulSoup
 
 yf.pdr_override()
-# tickers = gt.get_tickers(NYSE = True, NASDAQ = False, AMEX = False)[:50]
+tickers = gt.get_tickers(NYSE = True, NASDAQ = False, AMEX = False)[:100]
 
-# droplist_tickers = ["ASGI", "AEB", "ABM"]
+droplist_tickers = ["ASGI", "AEB", "ABM"]
 
-# tickers = list(filter(lambda x: x not in droplist_tickers, tickers))
+tickers = list(filter(lambda x: x not in droplist_tickers, tickers))
 
-tickers = ["JNJ", "KO", "AAPL", "MMM", "FB"]
+# tickers = ["JNJ", "KO", "AAPL", "MMM", "FB"]
 
 print("Checking " + str(len(tickers)) + " different tickers.")
 
@@ -44,7 +44,7 @@ def get_info_from_yahoo(ticker):
         else:
             pay_ratio = float(pay_ratio[:-1])
 
-        print(f"Done with div info for {ticker}")
+        print(f"{ticker}... 33%")
 
         return [div_yield, pay_ratio]
 
@@ -66,7 +66,7 @@ def get_return_info(ticker):
     max_return = round(ticker_pct.max(), rval)
     min_return = round(ticker_pct.min(), rval)
 
-    print(f"Done with return info on {ticker}")
+    print(f"{ticker}... 66%")
 
     return [avg_return, std, max_return, min_return]
 
@@ -78,7 +78,7 @@ def get_profile_info(ticker):
 
         sector = soup.select("#Col1-0-Profile-Proxy > section > div.asset-profile-container > div > div > p.D\(ib\).Va\(t\) > span:nth-child(2)")
         sector = sector[0].text
-        print(f"Done with profile info on {ticker}")
+        print(f"{ticker}... 100%")
         return sector
 
     except Exception as e:
@@ -111,15 +111,6 @@ for i in range(len(tickers)):
     div_yield = info_from_stat[0]
     payout_ratio = info_from_stat[1]
 
-    info_from_return = get_return_info(ticker)
-    avg_return = info_from_return[0]
-    std = info_from_return[1]
-    max_return = info_from_return[2]
-    min_return = info_from_return[3]
-
-    info_from_profile = get_profile_info(ticker)
-    sector = info_from_profile
-
     if low_yield < div_yield < high_yield:
         cond_1 = True
     else: cond_1 = False
@@ -130,6 +121,16 @@ for i in range(len(tickers)):
 
     # ADD EVERYTHING NEEDED FOR MAIN INFO
     if cond_1 and cond_2:
+
+        info_from_return = get_return_info(ticker)
+        avg_return = info_from_return[0]
+        std = info_from_return[1]
+        max_return = info_from_return[2]
+        min_return = info_from_return[3]
+
+        info_from_profile = get_profile_info(ticker)
+        sector = info_from_profile
+
         df_tickers.append(ticker)
         df_sector.append(sector)
         df_div_yield.append(div_yield)
